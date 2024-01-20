@@ -1,5 +1,21 @@
 # Docker and Postgres
 
+
+* [Intro to Docker](#intro-to-docker)
+  + [Python container from the command line](#python-container-from-the-command-line)
+  + [Custom image with Dockerfile](#custom-image-with-dockerfile)
+  + [Running a local python script inside the container](#running-a-local-python-script-inside-the-container)
+* [Ingesting NY Taxi Data into Postgres](#ingesting-ny-taxi-data-into-postgres)
+  + [Running a Postgres container from the commandline](#running-a-postgres-container-from-the-commandline)
+  + [Ingesting the NYC taxi data (ipynb version)](#ingesting-the-nyc-taxi-data-ipynb-version)
+  + [Ingesting the NYC taxi data (script version)](#ingesting-the-nyc-taxi-data-script-version)
+* [Connecting pgAdmin and Postgres](#connecting-pgadmin-and-postgres)
+* [Putting the ingestion script into Docker](#putting-the-ingestion-script-into-docker)
+* [Everything, altogether at the same time with docker-compose](#everything-altogether-at-the-same-time-with-docker-compose)
+
+
+_(toc generated with [`markdown-toc`](https://www.npmjs.com/package/markdown-toc))_
+
 ## Intro to Docker
 [video](https://www.youtube.com/watch?v=EYNwNlOrpr0)
 

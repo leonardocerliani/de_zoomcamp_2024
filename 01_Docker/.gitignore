@@ -1,3 +1,4 @@
-data_pgadmin/
+ny_taxi_postgres_data/
 docker-venv/
 yellow_tripdata_2021-01.csv
+data_pgadmin/
