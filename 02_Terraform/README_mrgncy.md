@@ -1,17 +1,5 @@
 # Terraform
 
-* [Terraform Primer - Concepts and Overview](#terraform-primer---concepts-and-overview)
-* [Terraform basics - Simple one file Terraform Deployment](#terraform-basics---simple-one-file-terraform-deployment)
-  + [Create a Service Account](#create-a-service-account)
-  + [Generate the keys for that service account](#generate-the-keys-for-that-service-account)
-  + [Connect terraform to the GCS](#connect-terraform-to-the-gcs)
-  + [Let's make a bucket... and destroy it!](#lets-make-a-bucket-and-destroy-it)
-* [Deployment with a variable file](#deployment-with-a-variable-file)
-  + [Use var + files for credentials](#use-var--files-for-credentials)
-* [Alternative setting on AWS](#alternative-setting-on-aws)
-
-
-# What is terraform
 [terraform.io](https://www.terraform.io/) allows to define the infrastructure of your project using code.
 
 In other words, it allows you to avoid the gui-click nightmare you have to through if you want to setup an infrastructure on GCS, AWS, Azure or similar.
