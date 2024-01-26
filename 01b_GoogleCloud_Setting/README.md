@@ -170,7 +170,7 @@ sftp> put mykeys.json
 Uploading mykeys.json to /home/pippo/.gc/mykeys.json
 ```
 
-The rest of the video shows how to terraform init and apply. A thorough explanation is provided in the next section.
+The rest of the video shows how to terraform init and apply. A thorough explanation is provided in the [next section](https://github.com/leonardocerliani/de_zoomcamp_2024/tree/main/01c_Terraform).
 
 
 > [!CAUTION]
