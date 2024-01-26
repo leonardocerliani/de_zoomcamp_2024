@@ -61,7 +61,7 @@ Host de-zoomcamp
 	IdentityFile ~/.ssh/DE_zoomcamp 
 ```
 
-Install **Anaconda** by downloading and executing the bash installer (actually I installed **[Miniconda](https://docs.conda.io/projects/miniconda/en/latest/\)** and then installed jupyter in the base environment)
+Install **Anaconda** by downloading and executing the bash installer (actually I installed **[Miniconda](https://docs.conda.io/projects/miniconda/en/latest/)** and then installed jupyter in the base environment)
 
 Install **Docker**
 
