@@ -1,5 +1,16 @@
 # Mage
 
+* [Configuring Mage](#configuring-mage)
+* [Configuring Postgres](#configuring-postgres)
+* [Loading data from a csv file to the Postgres db](#loading-data-from-a-csv-file-to-the-postgres-db)
+  + [DATA LOADER](#data-loader)
+  + [TRANSFORMER](#transformer)
+  + [DATA EXPORTER](#data-exporter)
+* [ETL in Google Cloud Storage](#etl-in-google-cloud-storage)
+  + [Configuring GCS](#configuring-gcs)
+  + [Store the NY Taxi data on a Google Bucket in partitioned parquet format](#store-the-ny-taxi-data-on-a-google-bucket-in-partitioned-parquet-format)
+  + [Store the NYC Taxi data in a BigQuery database](#store-the-nyc-taxi-data-in-a-bigquery-database)
+
 The repo with the links to all videos and slides is [at this link](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/02-workflow-orchestration#221----intro-to-orchestration). Here there will be only some notes for the practical part.
 
 ## Configuring Mage
@@ -25,7 +36,7 @@ docker pull mageai/mageai:latest
 
 Finally, we can fire up the pulled image with `docker compose up`
 
-At this point, we should have Mage available at `localhost:6789`
+At this point, **Mage is available at `localhost:6789`**
 
 For this course, we are running the Postgres and the core Mage service.
 
@@ -34,7 +45,8 @@ Follow up: a [~3 min demo video](https://www.youtube.com/watch?v=stI-gg4QBnI&lis
 
 ## Configuring Postgres
 [video](https://www.youtube.com/watch?v=pmhI-ezd3BE)
-Here we will configure the PSQL connection so that it can talk to the PSQL server/db which exists in the container we are using for the course.
+
+Here we will configure the Postgres connection so that it can talk to the Postgres server/db which exists in the container we are using for the course.
 
 We can quickly check that the postgres server is running in a couple of ways: first, simply by checking the output of `docker ps`. Also - at the risk of being pedantic - we can enter the container with a shell and then connect with `psql`
 
@@ -61,29 +73,269 @@ dev:
   POSTGRES_PORT: "{{ env_var('POSTGRES_PORT') }}"
 ```
 
-gif
+Once we are done with that, we can test the connection with a simple pipeline (if we dare calling it like that) which just executes a `SELECT 1` query from postgres. The steps are shown in the animation below. Note that we are using the `dev` profile we just created.
+
 ![](imgs/create_basic_pipeline.gif)
 
-mov
-![](imgs/create_basic_pipeline.mov)
 
-webm
-![](imgs/create_basic_pipeline.webm)
+## Loading data from a csv file to the Postgres db
+
+### DATA LOADER
+Create a new pipeline and insert a Python >> API data loader. We will be presented with the template.
+
+We then replace the url with the location of the Yellow Taxi data (see below) and - as Matt suggests - we pass the dtype of the columns, also prompting pandas to parse the two datetime columns `'tpep_pickup_datetime','tpep_dropoff_datetime'`.
+
+The code for the dtypes is provided on screen, but rather than visually cp/paste, I just read them with a python container I had dangling around:
+
+```bash
+docker run --rm -it python:3.9 /bin/bash
+```
+
+```python
+import pandas as pd
+
+url='https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz'
+
+df = pd.read_csv(url, sep=',', compression="gzip", nrows=10)
+
+for col in df.columns:
+    print(f"'{col} : '")
+```
+
+After modifying the pipeline, it looks like this:
+
+```python
+url='https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz'
+
+taxi_dtypes = {
+    'VendorID' : pd.Int64Dtype(),
+    'passenger_count' : pd.Int64Dtype(),
+    'trip_distance' : float,
+    'RatecodeID' : pd.Int64Dtype(),
+    'store_and_fwd_flag' : str,
+    'PULocationID' : pd.Int64Dtype(),
+    'DOLocationID' : pd.Int64Dtype(),
+    'payment_type' : pd.Int64Dtype(),
+    'fare_amount' : float,
+    'extra' : float,
+    'mta_tax' : float,
+    'tip_amount' : float,
+    'tolls_amount' : float,
+    'improvement_surcharge' : float,
+    'total_amount' : float,
+    'congestion_surcharge' : float,
+}
+
+parse_dates = ['tpep_pickup_datetime','tpep_dropoff_datetime']
+
+return pd.read_csv(url, sep=',', compression="gzip", dtype=taxi_dtypes, parse_dates=parse_dates)
+```
+
+Now we can run it and inspect the output below, which also informs us that the test has been passed.
+
+### TRANSFORMER
+Next we can add the **Transform** part of the pipeline. Add a generic Python TRANSFORMER block and call it `transform_taxi_data`.
+
+We will carry out a simple transformation, only removing the rows recording the taxi rides with 0 passengers. We will also write a simple test which confirms that there are no more rides with no passengers, otherwise print a message.
+
+```python
+if 'transformer' not in globals():
+    from mage_ai.data_preparation.decorators import transformer
+if 'test' not in globals():
+    from mage_ai.data_preparation.decorators import test
 
 
+@transformer
+def transform(data, *args, **kwargs):
+
+    nrows_zero=(data['passenger_count']==0).sum()
+    print(f'Rows with 0 passengers: {nrows_zero}')
 
 
+    return data[data['passenger_count'] > 0 ]
 
 
+@test
+def test_output(output, *args):
+    assert output['passenger_count'].isin([0]).sum() == 0, "There are rides with 0 passengers"
+```
+
+### DATA EXPORTER
+Now we load the transformed data into Postgres. To do so add an SQL DATA EXPORTER block and make sure that the df is set to Postgres and the profile to dev.
+
+Note that in the whole template _we just need to modify two variables_ (!), and specifically the `schema_name` and the `table_name`
+
+```python
+from mage_ai.settings.repo import get_repo_path
+from mage_ai.io.config import ConfigFileLoader
+from mage_ai.io.postgres import Postgres
+from pandas import DataFrame
+from os import path
+
+if 'data_exporter' not in globals():
+    from mage_ai.data_preparation.decorators import data_exporter
 
 
+@data_exporter
+def export_data_to_postgres(df: DataFrame, **kwargs) -> None:
+    """
+    Template for exporting data to a PostgreSQL database.
+    Specify your configuration settings in 'io_config.yaml'.
+
+    Docs: https://docs.mage.ai/design/data-loading#postgresql
+    """
+    schema_name = 'ny_taxi'  # Specify the name of the schema to export data to
+    table_name = 'yellow_cab_data'  # Specify the name of the table to export data to
+    config_path = path.join(get_repo_path(), 'io_config.yaml')
+    config_profile = 'dev'
+
+    with Postgres.with_config(ConfigFileLoader(config_path, config_profile)) as loader:
+        loader.export(
+            df,
+            schema_name,
+            table_name,
+            index=False,  # Specifies whether to include index in exported table
+            if_exists='replace',  # Specify resolution policy if table name already exists
+        )
+```
+
+Once we have run the whole pipeline (it will take about a minute due to the amount of data), we will have our yellow taxi data in Postgres.
+
+To make sure everything is there, we can add a new SQL DATA LOADER using raw SQL and just issue a simple query such as
+
+```sql
+SELECT * FROM ny_taxi.yellow_cab_data LIMIT 10
+```
+
+(As usual, be careful with the SELECT *)
+
+And that's all for now!
 
 
+## ETL in Google Cloud Storage
+
+So far we have ingested the data to a local postgres db. What if we want to put them in Google Cloud Storage? (GCS)
+
+### Configuring GCS
+[video](https://www.youtube.com/watch?v=00LP360iYvE)
+
+Pretty simple. So here's a summary and just a few things to be careful about below:
+
+**Summary**:
+- create a bucket in GCS
+- create a service account and the keys
+- make sure Mage knows where the keys are in the `io_config.yaml` file
+- create a pipeline with a BigQuery DATA LOADER and SELECT 1 to test it
+- drop the titanic_clean.csv in the bucket
+- create a pipeline with a python data loader from Google Cloud Storage (_not_ BigQuery)
+- run it to test that it loaded the data in the bucket
+- (destroy the keys!)
 
 
+When **creating the bucket**, make sure you select the proper region and note that a multi-region storage costs a bit more. Also, make sure you prevent public access to the bucket.
+
+For the sake of the tutorial, we give the **service account** full permission to do the hell out of GCS. Be careful with that (hence the keys destroy at the end...)
+
+In the `io_config.yaml` file you will notice that you can cp/paste your credentials in clear (AUFKM??... Wipe out those lines!) or pass the location of the json with the keys (much better...). Look for the line:
+
+```bash
+GOOGLE_SERVICE_ACC_KEY_FILEPATH: "/home/src/my_very_secret_keys.json"
+```
+
+Note that the path is to `/home/src` because we defined in the docker compose file that the $PWD from which we fire up docker compose is mapped there. You can also check by ls in the terminal inside Mage
+
+(Currently the $PWD is in the github repo so this is also not a great idea. Remember to destroy those keys when you are done)
+
+In the **python pipeline** to load the `titanic_clean.csv` you only need to update two lines:
+
+```bash
+bucket_name = 'mage-zoomcamp-leonardo-machinery'
+object_key = 'titanic_clean.csv'
+```
+
+### Store the NY Taxi data on a Google Bucket in partitioned parquet format
+
+First let's quickly write the NY taxi dataset to a single parquet file.
+
+To do this, we can reuse the components we previously created for the local postgres.
+
+![](imgs/mage_nyc_taxi_to_parquet.gif)
+
+But let's see something more interesting, i.e. how to store the data in a partitioned parquet file. This is particularly useful for quick access to large datasets.
+
+We first create a generic python DATA EXPORTER with no template. Now we want to:
+- manually define the location of the credentials
+- use **Apache Arrow** to write the data in a partitioned parquet
 
 
+Here's the final code:
+
+```python
+import pyarrow as pa
+import pyarrow.parquet as pq
+import os
+
+if 'data_exporter' not in globals():
+    from mage_ai.data_preparation.decorators import data_exporter
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "/home/src/mykeys.json"
+
+# project_id = 'de-zoomcamp-001'
+
+bucket_name = 'mage-zoomcamp-leonardo-machinery'
+table_name = 'nyc_taxi_data'
+
+root_path = f'{bucket_name}/{table_name}'
 
 
+@data_exporter
+def export_data(data, *args, **kwargs):
 
-EOF
+    # Create a column to partition the data by day
+    data['tpep_pickup_date'] = data['tpep_pickup_datetime'].dt.date
+
+    # define a pyarrow table
+    table = pa.Table.from_pandas(data)
+
+    # Create a filesystem interface to interact with GCS
+    gcs = pa.fs.GcsFileSystem()
+
+    # Write the table to a partitioned parquet
+    pq.write_to_dataset(
+        table,
+        root_path=root_path,
+        partition_cols = ['tpep_pickup_date'],
+        filesystem = gcs
+    )
+```
+
+### Store the NYC Taxi data in a BigQuery database
+
+- DATA LOAD : load the single file parquet from GCS
+- TRANSFORMERS : replace spaces in the column names with underscores, and lower all capital letters
+- DATA EXPORT : export to BigQuery defining the schema (ny_taxi) and table name (yellow_cab_data) using an SQL
+
+Nothing transcendental here. Mage makes it really easy to create the pipeline :O)
+
+Worth noting:
+
+The python logic to fix the column names is very simple and elegant:
+
+```python
+data.columns = (
+        data.columns
+        .str.replace(" ","_")
+        .str.lower()
+    )
+```
+
+In the SQL exporter the data coming from the transformer can be selected using `{{ df_1 }}`, so we can import it simply with
+
+```SQL
+select * from  {{ df_1 }}
+```
+
+**Triggers**
+In the last part of the video it is mentioned how to create a trigger for the pipeline to run.
+
+It is just to easy to do so with Mage, so just open the trigger tab and let Mage guide you! :))
