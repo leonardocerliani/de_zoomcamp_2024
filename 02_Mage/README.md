@@ -443,7 +443,7 @@ The tree view is also useful to define blocks that you can/want to run in parall
 
 
 ### You can use R!!!
-Finally! In R you can create loaders, transformers and exporters using R.
+Finally! In Mage you can create loaders, transformers and exporters using R.
 
 This is achieved by using the `pacman` package, e.g.
 
