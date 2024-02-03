@@ -1,0 +1,38 @@
+---
+title: "Greentaxi 4 Mage transformation"
+output: html_notebook
+---
+
+# DATA LOADER
+
+```{r}
+library(dplyr)
+library(readr)
+library(purrr)
+library(stringr)
+
+url = paste0(
+  "https://github.com/DataTalksClub/nyc-tlc-data/releases/download",
+  "/green/green_tripdata_2020-",
+  "MONTHNUMBA", ".csv.gz"
+)
+
+months = c("10","11","12")
+
+df <- months %>% map_dfr(~ read_csv(url %>% str_replace("MONTHNUMBA", .x)) )
+```
+
+# TRANSFORMER
+
+```{r}
+library(lubridate)
+
+df_clean <- df %>% 
+  janitor::clean_names() %>% 
+  mutate(lpep_pickup_date = lubridate::as_date(lpep_pickup_datetime)) %>% 
+  filter(trip_distance != 0 | passenger_count !=0 )
+
+
+
+```
+
