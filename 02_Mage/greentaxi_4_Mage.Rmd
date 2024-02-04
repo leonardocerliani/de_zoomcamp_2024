@@ -33,21 +33,10 @@ library(lubridate)
 df_clean <- df %>% 
   janitor::clean_names() %>% 
   mutate(lpep_pickup_date = lubridate::as_date(lpep_pickup_datetime)) %>% 
-  filter(trip_distance != 0 | passenger_count !=0 )
+  filter(trip_distance != 0 & passenger_count !=0 )
 
-df_clean$vendor_id %>% unique() %>% .[!is.na(.)]
+# vendor_ids <- df_clean$vendor_id %>% unique() %>% .[!is.na(.)] %>% as.character()
+# cat(paste0("Available vendor_id's (non NA) : ", vendor_ids))
+
 
 ```
-
-
-```{r}
-library(tictoc)
-
-# tic()
-# install.packages("arrow")
-# toc()
-
-library("arrow")
-```
-
-

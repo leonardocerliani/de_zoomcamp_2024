@@ -3,4 +3,5 @@ mage-zoomcamp/
 pandas_4_homework.py
 venv/
 mage-tidyverse/
-mage-R/
+.RData
+.Rhistory

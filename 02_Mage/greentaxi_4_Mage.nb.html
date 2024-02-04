@@ -1756,18 +1756,23 @@ display: none;
 <h1>DATA LOADER</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgPC0gbW9udGhzICU+JSBtYXBfZGZyKH4ge1xuICByZWFkX2Nzdih1cmwgJT4lIHN0cl9yZXBsYWNlKFwiTU9OVEhOVU1CQVwiLCAueCkpXG4gIHBhc3RlMChcIlJlYWRpbmcgbW9udGhcIiwgLngsIFwiXFxuXCIpICU+JSBjYXRcbn0pXG5cbmBgYCJ9 -->
-<pre class="r"><code>df &lt;- months %&gt;% map_dfr(~ {
-  read_csv(url %&gt;% str_replace(&quot;MONTHNUMBA&quot;, .x))
-  paste0(&quot;Reading month&quot;, .x, &quot;\n&quot;) %&gt;% cat
-})
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmxpYnJhcnkocmVhZHIpXG5saWJyYXJ5KHB1cnJyKVxubGlicmFyeShzdHJpbmdyKVxuXG51cmwgPSBwYXN0ZTAoXG4gIFwiaHR0cHM6Ly9naXRodWIuY29tL0RhdGFUYWxrc0NsdWIvbnljLXRsYy1kYXRhL3JlbGVhc2VzL2Rvd25sb2FkXCIsXG4gIFwiL2dyZWVuL2dyZWVuX3RyaXBkYXRhXzIwMjAtXCIsXG4gIFwiTU9OVEhOVU1CQVwiLCBcIi5jc3YuZ3pcIlxuKVxuXG5tb250aHMgPC0gc2VxKDEwLDEyKSAlPiUgc3ByaW50ZihcIiUwMmRcIiwgLilcblxuZGYgPC0gbW9udGhzICU+JSBtYXBfZGZyKH4gcmVhZF9jc3YodXJsICU+JSBzdHJfcmVwbGFjZShcIk1PTlRITlVNQkFcIiwgLngpKSApXG5cbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr)
+library(readr)
+library(purrr)
+library(stringr)
+
+url = paste0(
+  &quot;https://github.com/DataTalksClub/nyc-tlc-data/releases/download&quot;,
+  &quot;/green/green_tripdata_2020-&quot;,
+  &quot;MONTHNUMBA&quot;, &quot;.csv.gz&quot;
+)
+
+months &lt;- seq(10,12) %&gt;% sprintf(&quot;%02d&quot;, .)
+
+df &lt;- months %&gt;% map_dfr(~ read_csv(url %&gt;% str_replace(&quot;MONTHNUMBA&quot;, .x)) )
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUmVhZGluZyBtb250aDEwXG5SZWFkaW5nIG1vbnRoMTFcblJlYWRpbmcgbW9udGgxMlxuIn0= -->
-<pre><code>Reading month10
-Reading month11
-Reading month12</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1775,44 +1780,17 @@ Reading month12</code></pre>
 <h1>TRANSFORMER</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYVxuXG5gYGAifQ== -->
-<pre class="r"><code>a
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2F0KHZlbmRvcl9pZHMpXG5cbmBgYCJ9 -->
+<pre class="r"><code>cat(vendor_ids)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgM1xuYXR0cigsXCJuYS5hY3Rpb25cIilcblsxXSAxXG5hdHRyKCxcImNsYXNzXCIpXG5bMV0gXCJvbWl0XCJcbiJ9 -->
-<pre><code>[1] 1 3
-attr(,&quot;na.action&quot;)
-[1] 1
-attr(,&quot;class&quot;)
-[1] &quot;omit&quot;</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiMiAxXG4ifQ== -->
+<pre><code>2 1</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShcImFycm93XCIpXG5cbmBgYCJ9 -->
-<pre class="r"><code>library(&quot;arrow&quot;)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiU29tZSBmZWF0dXJlcyBhcmUgbm90IGVuYWJsZWQgaW4gdGhpcyBidWlsZCBvZiBBcnJvdy4gUnVuIGBhcnJvd19pbmZvKClgIGZvciBtb3JlIGluZm9ybWF0aW9uLlxuXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYYXJyb3figJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpsdWJyaWRhdGXigJk6XG5cbiAgICBkdXJhdGlvblxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnV0aWxz4oCZOlxuXG4gICAgdGltZXN0YW1wXG4ifQ== -->
-<pre><code>Some features are not enabled in this build of Arrow. Run `arrow_info()` for more information.
-
-Attaching package: ‘arrow’
-
-The following object is masked from ‘package:lubridate’:
-
-    duration
-
-The following object is masked from ‘package:utils’:
-
-    timestamp</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiR3JlZW50YXhpIDQgTWFnZSB0cmFuc2Zvcm1hdGlvbiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBEQVRBIExPQURFUgoKYGBge3IsIG1lc3NhZ2U9Rn0KbGlicmFyeShkcGx5cikKbGlicmFyeShyZWFkcikKbGlicmFyeShwdXJycikKbGlicmFyeShzdHJpbmdyKQoKdXJsID0gcGFzdGUwKAogICJodHRwczovL2dpdGh1Yi5jb20vRGF0YVRhbGtzQ2x1Yi9ueWMtdGxjLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQiLAogICIvZ3JlZW4vZ3JlZW5fdHJpcGRhdGFfMjAyMC0iLAogICJNT05USE5VTUJBIiwgIi5jc3YuZ3oiCikKCm1vbnRocyA8LSBzZXEoMTAsMTIpICU+JSBzcHJpbnRmKCIlMDJkIiwgLikKCmRmIDwtIG1vbnRocyAlPiUgbWFwX2Rmcih+IHJlYWRfY3N2KHVybCAlPiUgc3RyX3JlcGxhY2UoIk1PTlRITlVNQkEiLCAueCkpICkKCmBgYAoKCgojIFRSQU5TRk9STUVSCgpgYGB7cn0KbGlicmFyeShsdWJyaWRhdGUpCgpkZl9jbGVhbiA8LSBkZiAlPiUgCiAgamFuaXRvcjo6Y2xlYW5fbmFtZXMoKSAlPiUgCiAgbXV0YXRlKGxwZXBfcGlja3VwX2RhdGUgPSBsdWJyaWRhdGU6OmFzX2RhdGUobHBlcF9waWNrdXBfZGF0ZXRpbWUpKSAlPiUgCiAgZmlsdGVyKHRyaXBfZGlzdGFuY2UgIT0gMCB8IHBhc3Nlbmdlcl9jb3VudCAhPTAgKQoKZGZfY2xlYW4kdmVuZG9yX2lkICU+JSB1bmlxdWUoKSAlPiUgLlshaXMubmEoLildCgpgYGAKCgpgYGB7cn0KbGlicmFyeSh0aWN0b2MpCgojIHRpYygpCiMgaW5zdGFsbC5wYWNrYWdlcygiYXJyb3ciKQojIHRvYygpCgpsaWJyYXJ5KCJhcnJvdyIpCmBgYAoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiR3JlZW50YXhpIDQgTWFnZSB0cmFuc2Zvcm1hdGlvbiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBEQVRBIExPQURFUgoKYGBge3IsIG1lc3NhZ2U9Rn0KbGlicmFyeShkcGx5cikKbGlicmFyeShyZWFkcikKbGlicmFyeShwdXJycikKbGlicmFyeShzdHJpbmdyKQoKdXJsID0gcGFzdGUwKAogICJodHRwczovL2dpdGh1Yi5jb20vRGF0YVRhbGtzQ2x1Yi9ueWMtdGxjLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQiLAogICIvZ3JlZW4vZ3JlZW5fdHJpcGRhdGFfMjAyMC0iLAogICJNT05USE5VTUJBIiwgIi5jc3YuZ3oiCikKCm1vbnRocyA8LSBzZXEoMTAsMTIpICU+JSBzcHJpbnRmKCIlMDJkIiwgLikKCmRmIDwtIG1vbnRocyAlPiUgbWFwX2Rmcih+IHJlYWRfY3N2KHVybCAlPiUgc3RyX3JlcGxhY2UoIk1PTlRITlVNQkEiLCAueCkpICkKCmBgYAoKCgojIFRSQU5TRk9STUVSCgpgYGB7cn0KbGlicmFyeShsdWJyaWRhdGUpCgpkZl9jbGVhbiA8LSBkZiAlPiUgCiAgamFuaXRvcjo6Y2xlYW5fbmFtZXMoKSAlPiUgCiAgbXV0YXRlKGxwZXBfcGlja3VwX2RhdGUgPSBsdWJyaWRhdGU6OmFzX2RhdGUobHBlcF9waWNrdXBfZGF0ZXRpbWUpKSAlPiUgCiAgZmlsdGVyKHRyaXBfZGlzdGFuY2UgIT0gMCAmIHBhc3Nlbmdlcl9jb3VudCAhPTAgKQoKIyB2ZW5kb3JfaWRzIDwtIGRmX2NsZWFuJHZlbmRvcl9pZCAlPiUgdW5pcXVlKCkgJT4lIC5bIWlzLm5hKC4pXSAlPiUgYXMuY2hhcmFjdGVyKCkKIyBjYXQocGFzdGUwKCJBdmFpbGFibGUgdmVuZG9yX2lkJ3MgKG5vbiBOQSkgOiAiLCB2ZW5kb3JfaWRzKSkKCgpgYGAK</div>
 
 
 
