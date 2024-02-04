@@ -1775,30 +1775,44 @@ Reading month12</code></pre>
 <h1>TRANSFORMER</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShsdWJyaWRhdGUpXG5gYGAifQ== -->
-<pre class="r"><code>library(lubridate)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYbHVicmlkYXRl4oCZXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0cyBhcmUgbWFza2VkIGZyb20g4oCYcGFja2FnZTpiYXNl4oCZOlxuXG4gICAgZGF0ZSwgaW50ZXJzZWN0LCBzZXRkaWZmLCB1bmlvblxuIn0= -->
-<pre><code>
-Attaching package: ‘lubridate’
-
-The following objects are masked from ‘package:base’:
-
-    date, intersect, setdiff, union</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGZfY2xlYW4gPC0gZGYgJT4lIFxuICBqYW5pdG9yOjpjbGVhbl9uYW1lcygpICU+JSBcbiAgbXV0YXRlKGxwZXBfcGlja3VwX2RhdGUgPSBsdWJyaWRhdGU6OmFzX2RhdGUobHBlcF9waWNrdXBfZGF0ZXRpbWUpKSAlPiUgXG4gIGZpbHRlcih0cmlwX2Rpc3RhbmNlICE9IDAgfCBwYXNzZW5nZXJfY291bnQgIT0wIClcblxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>df_clean &lt;- df %&gt;% 
-  janitor::clean_names() %&gt;% 
-  mutate(lpep_pickup_date = lubridate::as_date(lpep_pickup_datetime)) %&gt;% 
-  filter(trip_distance != 0 | passenger_count !=0 )
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYVxuXG5gYGAifQ== -->
+<pre class="r"><code>a
 </code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEgM1xuYXR0cigsXCJuYS5hY3Rpb25cIilcblsxXSAxXG5hdHRyKCxcImNsYXNzXCIpXG5bMV0gXCJvbWl0XCJcbiJ9 -->
+<pre><code>[1] 1 3
+attr(,&quot;na.action&quot;)
+[1] 1
+attr(,&quot;class&quot;)
+[1] &quot;omit&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShcImFycm93XCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>library(&quot;arrow&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiU29tZSBmZWF0dXJlcyBhcmUgbm90IGVuYWJsZWQgaW4gdGhpcyBidWlsZCBvZiBBcnJvdy4gUnVuIGBhcnJvd19pbmZvKClgIGZvciBtb3JlIGluZm9ybWF0aW9uLlxuXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYYXJyb3figJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpsdWJyaWRhdGXigJk6XG5cbiAgICBkdXJhdGlvblxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnV0aWxz4oCZOlxuXG4gICAgdGltZXN0YW1wXG4ifQ== -->
+<pre><code>Some features are not enabled in this build of Arrow. Run `arrow_info()` for more information.
+
+Attaching package: ‘arrow’
+
+The following object is masked from ‘package:lubridate’:
+
+    duration
+
+The following object is masked from ‘package:utils’:
+
+    timestamp</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiR3JlZW50YXhpIDQgTWFnZSB0cmFuc2Zvcm1hdGlvbiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBEQVRBIExPQURFUgoKYGBge3IsIG1lc3NhZ2U9Rn0KbGlicmFyeShkcGx5cikKbGlicmFyeShyZWFkcikKbGlicmFyeShwdXJycikKbGlicmFyeShzdHJpbmdyKQoKdXJsID0gcGFzdGUwKAogICJodHRwczovL2dpdGh1Yi5jb20vRGF0YVRhbGtzQ2x1Yi9ueWMtdGxjLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQiLAogICIvZ3JlZW4vZ3JlZW5fdHJpcGRhdGFfMjAyMC0iLAogICJNT05USE5VTUJBIiwgIi5jc3YuZ3oiCikKCm1vbnRocyA8LSBzZXEoMTAsMTIpICU+JSBzcHJpbnRmKCIlMDJkIiwgLikKCmRmIDwtIG1vbnRocyAlPiUgbWFwX2Rmcih+IHJlYWRfY3N2KHVybCAlPiUgc3RyX3JlcGxhY2UoIk1PTlRITlVNQkEiLCAueCkpICkKCmBgYAoKCgojIFRSQU5TRk9STUVSCgpgYGB7cn0KbGlicmFyeShsdWJyaWRhdGUpCgpkZl9jbGVhbiA8LSBkZiAlPiUgCiAgamFuaXRvcjo6Y2xlYW5fbmFtZXMoKSAlPiUgCiAgbXV0YXRlKGxwZXBfcGlja3VwX2RhdGUgPSBsdWJyaWRhdGU6OmFzX2RhdGUobHBlcF9waWNrdXBfZGF0ZXRpbWUpKSAlPiUgCiAgZmlsdGVyKHRyaXBfZGlzdGFuY2UgIT0gMCB8IHBhc3Nlbmdlcl9jb3VudCAhPTAgKQoKCgpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiR3JlZW50YXhpIDQgTWFnZSB0cmFuc2Zvcm1hdGlvbiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBEQVRBIExPQURFUgoKYGBge3IsIG1lc3NhZ2U9Rn0KbGlicmFyeShkcGx5cikKbGlicmFyeShyZWFkcikKbGlicmFyeShwdXJycikKbGlicmFyeShzdHJpbmdyKQoKdXJsID0gcGFzdGUwKAogICJodHRwczovL2dpdGh1Yi5jb20vRGF0YVRhbGtzQ2x1Yi9ueWMtdGxjLWRhdGEvcmVsZWFzZXMvZG93bmxvYWQiLAogICIvZ3JlZW4vZ3JlZW5fdHJpcGRhdGFfMjAyMC0iLAogICJNT05USE5VTUJBIiwgIi5jc3YuZ3oiCikKCm1vbnRocyA8LSBzZXEoMTAsMTIpICU+JSBzcHJpbnRmKCIlMDJkIiwgLikKCmRmIDwtIG1vbnRocyAlPiUgbWFwX2Rmcih+IHJlYWRfY3N2KHVybCAlPiUgc3RyX3JlcGxhY2UoIk1PTlRITlVNQkEiLCAueCkpICkKCmBgYAoKCgojIFRSQU5TRk9STUVSCgpgYGB7cn0KbGlicmFyeShsdWJyaWRhdGUpCgpkZl9jbGVhbiA8LSBkZiAlPiUgCiAgamFuaXRvcjo6Y2xlYW5fbmFtZXMoKSAlPiUgCiAgbXV0YXRlKGxwZXBfcGlja3VwX2RhdGUgPSBsdWJyaWRhdGU6OmFzX2RhdGUobHBlcF9waWNrdXBfZGF0ZXRpbWUpKSAlPiUgCiAgZmlsdGVyKHRyaXBfZGlzdGFuY2UgIT0gMCB8IHBhc3Nlbmdlcl9jb3VudCAhPTAgKQoKZGZfY2xlYW4kdmVuZG9yX2lkICU+JSB1bmlxdWUoKSAlPiUgLlshaXMubmEoLildCgpgYGAKCgpgYGB7cn0KbGlicmFyeSh0aWN0b2MpCgojIHRpYygpCiMgaW5zdGFsbC5wYWNrYWdlcygiYXJyb3ciKQojIHRvYygpCgpsaWJyYXJ5KCJhcnJvdyIpCmBgYAoKCg==</div>
 
 
 

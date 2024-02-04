@@ -35,7 +35,19 @@ df_clean <- df %>%
   mutate(lpep_pickup_date = lubridate::as_date(lpep_pickup_datetime)) %>% 
   filter(trip_distance != 0 | passenger_count !=0 )
 
-
+df_clean$vendor_id %>% unique() %>% .[!is.na(.)]
 
 ```
+
+
+```{r}
+library(tictoc)
+
+# tic()
+# install.packages("arrow")
+# toc()
+
+library("arrow")
+```
+
 
