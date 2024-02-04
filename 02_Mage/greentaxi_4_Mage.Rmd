@@ -5,7 +5,7 @@ output: html_notebook
 
 # DATA LOADER
 
-```{r}
+```{r, message=F}
 library(dplyr)
 library(readr)
 library(purrr)
@@ -17,10 +17,13 @@ url = paste0(
   "MONTHNUMBA", ".csv.gz"
 )
 
-months = c("10","11","12")
+months <- seq(10,12) %>% sprintf("%02d", .)
 
 df <- months %>% map_dfr(~ read_csv(url %>% str_replace("MONTHNUMBA", .x)) )
+
 ```
+
+
 
 # TRANSFORMER
 
