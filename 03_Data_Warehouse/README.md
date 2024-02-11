@@ -281,6 +281,11 @@ We can also leave the `gcr.io/google.com/cloudsdktool/google-cloud-cli` containe
 For security, I will now delete the keys from the service account I used.
 Also, the data in the bucket should be erased in one day (let's see)
 
-##
+## Modify GCS bucket name
+The first time I created the buckets with Terraform I misspelled the name of the
+`fhv` bucket, which caused the Mage script to (righteously) throw an error.
+
+Remarkably, to correct this I only needed to fix the spelling in the main.tf file,
+rerun terraform plan and terraform apply. (!)
 
 EOF
