@@ -18,6 +18,8 @@ Since I didn't have time this week to go through all the material, and at the sa
 - **[Mage](https://www.mage.ai/)** to transfer the parquet files from the NY taxi data website to the GCS buckets
 
 
+![](imgs/gcloud_terraform_mage_bucket_bigquery.png)
+
 ## Plan
 
 - Create a new service account with no priviledges from the google cloud UI
