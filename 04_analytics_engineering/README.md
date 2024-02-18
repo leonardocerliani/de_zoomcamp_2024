@@ -377,7 +377,7 @@ Lots more steps to go, but few new concepts. The code is [here](https://github.c
 
 - create a `core/dim_zones.sql` to import the zone lookup seed (tip : use autocompletion!)
 
-![](imgs/dbt_taxi_zones_sql.gi)
+![](imgs/dbt_taxi_zones_sql.gif)
 
 - create a `fact_trips.sql` table containing both green and yellow data, and enrich it with the zones from the taxi_zones table we just created
 
